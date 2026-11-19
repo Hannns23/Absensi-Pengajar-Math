@@ -11,7 +11,7 @@ interface DataPengajarHariIni {
 }
 
 const APPS_SCRIPT_URL = import.meta.env.VITE_APPS_SCRIPT_URL || "";
-const ADMIN_PIN = "1234";
+const ADMIN_PIN = "1234"; // Ganti PIN Admin di sini jika diperlukan
 
 export default function App() {
   const [halaman, setHalaman] = useState<'publik' | 'admin'>('publik');
@@ -35,7 +35,7 @@ export default function App() {
       setTanggal(json.tanggal || "-");
       setDaftarHariIni(json.data || []);
     } catch (err) {
-      console.error(err);
+      console.error("Gagal mengambil data publik:", err);
     } finally {
       setLoading(false);
     }
@@ -44,7 +44,7 @@ export default function App() {
   useEffect(() => {
     if (halaman === 'publik') {
       ambilDataPublik();
-      const interval = setInterval(ambilDataPublik, 30000);
+      const interval = setInterval(ambilDataPublik, 30000); // Auto-refresh tiap 30 detik
       return () => clearInterval(interval);
     }
   }, [halaman]);
@@ -70,7 +70,8 @@ export default function App() {
   });
 
   return (
-    <div style={{ maxWidth: 1000, margin: '0 auto', padding: 20 }}>
+    <div style={{ maxWidth: 1000, margin: '0 auto', padding: 20, fontFamily: 'system-ui, -apple-system, sans-serif', color: '#0f172a' }}>
+      {/* Header Navigasi */}
       <nav style={{
         display: 'flex', flexWrap: 'wrap', justifyContent: 'space-between', alignItems: 'center',
         gap: 12, background: '#0f172a', color: '#fff', padding: '14px 20px', borderRadius: 10, marginBottom: 24
@@ -101,6 +102,14 @@ export default function App() {
         </div>
       </nav>
 
+      {/* Peringatan jika VITE_APPS_SCRIPT_URL belum diatur di Vercel */}
+      {!APPS_SCRIPT_URL && (
+        <div style={{ padding: 14, marginBottom: 20, borderRadius: 8, background: '#fef2f2', color: '#991b1b', border: '1px solid #fecaca', fontSize: 13 }}>
+          ⚠️ <strong>VITE_APPS_SCRIPT_URL</strong> belum diatur di Environment Variables Vercel. Silakan tambahkan URL Web App Google Apps Script lalu lakukan Redeploy.
+        </div>
+      )}
+
+      {/* Halaman Monitoring Publik */}
       {halaman === 'publik' && (
         <div>
           <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 18 }}>
@@ -135,7 +144,7 @@ export default function App() {
           </div>
 
           {loading ? (
-            <p style={{ textAlign: 'center', color: '#64748b' }}>Memuat data...</p>
+            <p style={{ textAlign: 'center', color: '#64748b', padding: 30 }}>Memuat data kehadiran...</p>
           ) : (
             <div style={{ overflowX: 'auto', border: '1px solid #e2e8f0', borderRadius: 8, background: '#fff' }}>
               <table style={{ width: '100%', borderCollapse: 'collapse', fontSize: 13, textAlign: 'left' }}>
@@ -149,17 +158,25 @@ export default function App() {
                   </tr>
                 </thead>
                 <tbody>
-                  {dataTampil.map((item, idx) => (
-                    <tr key={item.uid} style={{ borderBottom: '1px solid #e2e8f0' }}>
-                      <td style={{ padding: 10 }}>{idx + 1}</td>
-                      <td style={{ padding: 10, fontWeight: 600 }}>{item.nama}</td>
-                      <td style={{ padding: 10 }}>
-                        <span style={badgeStatus(item.status)}>{item.status}</span>
+                  {dataTampil.length === 0 ? (
+                    <tr>
+                      <td colSpan={5} style={{ padding: 24, textAlign: 'center', color: '#64748b' }}>
+                        Belum ada data pengajar untuk kategori ini.
                       </td>
-                      <td style={{ padding: 10 }}>{item.jamMasuk}</td>
-                      <td style={{ padding: 10 }}>{item.jamPulang}</td>
                     </tr>
-                  ))}
+                  ) : (
+                    dataTampil.map((item, idx) => (
+                      <tr key={item.uid} style={{ borderBottom: '1px solid #e2e8f0' }}>
+                        <td style={{ padding: 10 }}>{idx + 1}</td>
+                        <td style={{ padding: 10, fontWeight: 600 }}>{item.nama}</td>
+                        <td style={{ padding: 10 }}>
+                          <span style={badgeStatus(item.status)}>{item.status}</span>
+                        </td>
+                        <td style={{ padding: 10 }}>{item.jamMasuk}</td>
+                        <td style={{ padding: 10 }}>{item.jamPulang}</td>
+                      </tr>
+                    ))
+                  )}
                 </tbody>
               </table>
             </div>
@@ -167,6 +184,7 @@ export default function App() {
         </div>
       )}
 
+      {/* Halaman Login Admin */}
       {halaman === 'admin' && !isAdminAuth && (
         <form onSubmit={handleLoginAdmin} style={{ maxWidth: 360, margin: '40px auto', padding: 28, background: '#fff', border: '1px solid #e2e8f0', borderRadius: 12, textAlign: 'center' }}>
           <div style={{ fontSize: 32, marginBottom: 8 }}>🔐</div>
@@ -177,7 +195,7 @@ export default function App() {
             placeholder="PIN Admin..."
             value={pinInput}
             onChange={(e) => setPinInput(e.target.value)}
-            style={{ width: '100%', padding: 11, marginBottom: 14, borderRadius: 8, border: '1px solid #cbd5e1', textAlign: 'center', fontSize: 16, letterSpacing: 4 }}
+            style={{ width: '100%', boxSizing: 'border-box', padding: 11, marginBottom: 14, borderRadius: 8, border: '1px solid #cbd5e1', textAlign: 'center', fontSize: 16, letterSpacing: 4 }}
           />
           <button type="submit" style={{ width: '100%', padding: 11, background: '#059669', color: '#fff', border: 'none', borderRadius: 8, fontWeight: 700, cursor: 'pointer' }}>
             Buka Panel Admin
@@ -185,6 +203,7 @@ export default function App() {
         </form>
       )}
 
+      {/* Halaman Panel Admin */}
       {halaman === 'admin' && isAdminAuth && (
         <AdminPanel
           appsScriptUrl={APPS_SCRIPT_URL}
