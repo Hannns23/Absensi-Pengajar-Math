@@ -141,6 +141,9 @@ export default function AdminPanel({ appsScriptUrl, onLogout }: AdminPanelProps)
         .join(separator)
     );
 
+    const csvContent = ["sep=;", header, ...rows].join("\r\n"); // <-- Menggantikan baris lama di sini
+    const blob = new Blob([csvContent], { type: "text/csv;charset=utf-8;" });
+
     const csvContent = ["sep=;", header, ...rows].join("\r\n");
     const blob = new Blob([csvContent], { type: "text/csv;charset=utf-8;" });
     const url = URL.createObjectURL(blob);
