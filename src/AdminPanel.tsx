@@ -25,7 +25,7 @@ export default function AdminPanel({ appsScriptUrl, onLogout }: AdminPanelProps)
   const [masterPengajar, setMasterPengajar] = useState<MasterPengajar[]>([]);
   const [riwayatAbsensi, setRiwayatAbsensi] = useState<LogAbsensi[]>([]);
   const [batasJamMasuk, setBatasJamMasuk] = useState<string>("07:30:00");
-  
+
   const [loading, setLoading] = useState<boolean>(true);
   const [proses, setProses] = useState<boolean>(false);
   const [notif, setNotif] = useState<{ tipe: 'ok' | 'err'; teks: string } | null>(null);
@@ -131,30 +131,17 @@ export default function AdminPanel({ appsScriptUrl, onLogout }: AdminPanelProps)
     }
   };
 
- const exportKeCSV = () => {
-  const separator = ";";
-  const header = ["Tanggal", "Waktu", "UID Kartu", "Nama Pengajar", "Status"].join(separator);
+  const exportKeCSV = () => {
+    const separator = ";";
+    const header = ["Tanggal", "Waktu", "UID Kartu", "Nama Pengajar", "Status"].join(separator);
 
-  const rows = filterLogAbsensi.map((r) =>
-    [r.tanggal, r.waktu, r.uid, r.nama, r.status]
-      .map((val) => `"${String(val).replace(/"/g, '""')}"`)
-      .join(separator)
-  );
+    const rows = filterLogAbsensi.map((r) =>
+      [r.tanggal, r.waktu, r.uid, r.nama, r.status]
+        .map((val) => `"${String(val).replace(/"/g, '""')}"`)
+        .join(separator)
+    );
 
-  const csvContent = ["sep=;", header, ...rows].join("\r\n");
-  const blob = new Blob([csvContent], { type: "text/csv;charset=utf-8;" });
-  const url = URL.createObjectURL(blob);
-
-  const link = document.createElement("a");
-  link.href = url;
-  link.setAttribute("download", `Rekap_Absensi_${new Date().toISOString().slice(0, 10)}.csv`);
-  document.body.appendChild(link);
-  link.click();
-  document.body.removeChild(link);
-  URL.revokeObjectURL(url);
-};
-
-    const csvContent = "\uFEFF" + [header, ...rows].join("\r\n");
+    const csvContent = ["sep=;", header, ...rows].join("\r\n");
     const blob = new Blob([csvContent], { type: "text/csv;charset=utf-8;" });
     const url = URL.createObjectURL(blob);
 
@@ -165,7 +152,7 @@ export default function AdminPanel({ appsScriptUrl, onLogout }: AdminPanelProps)
     link.click();
     document.body.removeChild(link);
     URL.revokeObjectURL(url);
-  };;
+  };
 
   const filterLogAbsensi = riwayatAbsensi.filter((item) => {
     const cocokTeks =
@@ -197,7 +184,6 @@ export default function AdminPanel({ appsScriptUrl, onLogout }: AdminPanelProps)
         </div>
       )}
 
-      {/* Kartu Ringkasan Statistik */}
       <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))', gap: 12, marginBottom: 20 }}>
         <div style={statCard('#eff6ff', '#1e40af')}>
           <div style={{ fontSize: 24, fontWeight: 800 }}>{masterPengajar.length}</div>
@@ -213,7 +199,6 @@ export default function AdminPanel({ appsScriptUrl, onLogout }: AdminPanelProps)
         </div>
       </div>
 
-      {/* Bar Pengaturan Jam Masuk & Aksi Cepat */}
       <div style={{
         display: 'flex', flexWrap: 'wrap', justifyContent: 'space-between', alignItems: 'center',
         gap: 12, background: '#ffffff', padding: 16, borderRadius: 10, border: '1px solid #e2e8f0', marginBottom: 20
@@ -237,7 +222,6 @@ export default function AdminPanel({ appsScriptUrl, onLogout }: AdminPanelProps)
         </div>
       </div>
 
-      {/* Tab Navigasi Sub-Menu & Kolom Pencarian */}
       <div style={{ display: 'flex', flexWrap: 'wrap', justifyContent: 'space-between', alignItems: 'center', gap: 12, marginBottom: 16 }}>
         <div style={{ display: 'flex', flexWrap: 'wrap', gap: 8 }}>
           <button onClick={() => setSubTab('log')} style={btnTab(subTab === 'log')}>
@@ -280,7 +264,6 @@ export default function AdminPanel({ appsScriptUrl, onLogout }: AdminPanelProps)
         <div style={{ padding: 40, textAlign: 'center', color: '#64748b' }}>Memuat seluruh data dari Google Spreadsheet...</div>
       ) : (
         <>
-          {/* Tab 1: Semua Log Absensi */}
           {subTab === 'log' && (
             <div style={{ overflowX: 'auto', border: '1px solid #e2e8f0', borderRadius: 8, background: '#fff' }}>
               <table style={tableStyle}>
@@ -320,7 +303,6 @@ export default function AdminPanel({ appsScriptUrl, onLogout }: AdminPanelProps)
             </div>
           )}
 
-          {/* Tab 2: Master Pengajar */}
           {subTab === 'master' && (
             <div style={{ overflowX: 'auto', border: '1px solid #e2e8f0', borderRadius: 8, background: '#fff' }}>
               <table style={tableStyle}>
@@ -375,7 +357,6 @@ export default function AdminPanel({ appsScriptUrl, onLogout }: AdminPanelProps)
             </div>
           )}
 
-          {/* Tab 3: Tambah Pengajar Manual */}
           {subTab === 'tambah' && (
             <form onSubmit={handleTambahPengajar} style={{ maxWidth: 460, background: '#ffffff', padding: 24, borderRadius: 10, border: '1px solid #e2e8f0' }}>
               <h3 style={{ marginTop: 0, fontSize: 16 }}>➕ Daftarkan Pengajar Baru Secara Manual</h3>
