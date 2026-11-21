@@ -11,7 +11,7 @@ interface DataPengajarHariIni {
 }
 
 const APPS_SCRIPT_URL = import.meta.env.VITE_APPS_SCRIPT_URL || "";
-const ADMIN_PIN = "1234"; // Ganti PIN Admin di sini jika diperlukan
+const ADMIN_PIN = "1234";
 
 export default function App() {
   const [halaman, setHalaman] = useState<'publik' | 'admin'>('publik');
@@ -44,7 +44,7 @@ export default function App() {
   useEffect(() => {
     if (halaman === 'publik') {
       ambilDataPublik();
-      const interval = setInterval(ambilDataPublik, 30000); // Auto-refresh tiap 30 detik
+      const interval = setInterval(ambilDataPublik, 30000);
       return () => clearInterval(interval);
     }
   }, [halaman]);
@@ -71,7 +71,6 @@ export default function App() {
 
   return (
     <div style={{ maxWidth: 1000, margin: '0 auto', padding: 20, fontFamily: 'system-ui, -apple-system, sans-serif', color: '#0f172a' }}>
-      {/* Header Navigasi */}
       <nav style={{
         display: 'flex', flexWrap: 'wrap', justifyContent: 'space-between', alignItems: 'center',
         gap: 12, background: '#0f172a', color: '#fff', padding: '14px 20px', borderRadius: 10, marginBottom: 24
@@ -102,14 +101,12 @@ export default function App() {
         </div>
       </nav>
 
-      {/* Peringatan jika VITE_APPS_SCRIPT_URL belum diatur di Vercel */}
       {!APPS_SCRIPT_URL && (
         <div style={{ padding: 14, marginBottom: 20, borderRadius: 8, background: '#fef2f2', color: '#991b1b', border: '1px solid #fecaca', fontSize: 13 }}>
           ⚠️ <strong>VITE_APPS_SCRIPT_URL</strong> belum diatur di Environment Variables Vercel. Silakan tambahkan URL Web App Google Apps Script lalu lakukan Redeploy.
         </div>
       )}
 
-      {/* Halaman Monitoring Publik */}
       {halaman === 'publik' && (
         <div>
           <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 18 }}>
@@ -184,7 +181,6 @@ export default function App() {
         </div>
       )}
 
-      {/* Halaman Login Admin */}
       {halaman === 'admin' && !isAdminAuth && (
         <form onSubmit={handleLoginAdmin} style={{ maxWidth: 360, margin: '40px auto', padding: 28, background: '#fff', border: '1px solid #e2e8f0', borderRadius: 12, textAlign: 'center' }}>
           <div style={{ fontSize: 32, marginBottom: 8 }}>🔐</div>
@@ -203,7 +199,6 @@ export default function App() {
         </form>
       )}
 
-      {/* Halaman Panel Admin */}
       {halaman === 'admin' && isAdminAuth && (
         <AdminPanel
           appsScriptUrl={APPS_SCRIPT_URL}
